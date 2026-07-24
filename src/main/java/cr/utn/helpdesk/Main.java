@@ -1,6 +1,7 @@
 package cr.utn.helpdesk;
-import cr.utn.helpdesk.enums.Estado;
+
 import cr.utn.helpdesk.enums.Categoria;
+import cr.utn.helpdesk.enums.Estado;
 import cr.utn.helpdesk.enums.Impacto;
 import cr.utn.helpdesk.enums.Urgencia;
 import cr.utn.helpdesk.service.IncidenciaService;
@@ -27,35 +28,19 @@ public class Main {
                 Urgencia.MEDIA
         );
 
-        System.out.println("===== TODAS =====");
+        System.out.println("===== TABLERO KANBAN INICIAL =====");
+        System.out.println(service.getKanbanService().obtenerTablero());
 
-        for (var incidencia : service.obtenerIncidencias()) {
-            System.out.println(incidencia);
-        }
-
-        System.out.println("\n===== BUSCAR ID 1 =====");
-        System.out.println(service.buscarPorId(1));
-
-        System.out.println("\n===== CATEGORIA RED =====");
-
-        for (var incidencia : service.buscarPorCategoria(Categoria.RED)) {
-            System.out.println(incidencia);
-        }
+        service.getExpediteService().marcarExpedite(1);
+        System.out.println("\n===== EXPEDITE ASIGNADA A ID 1 =====");
+        System.out.println(service.getKanbanService().obtenerTablero());
 
         service.cambiarEstado(1, Estado.LISTA, null);
-
         service.cambiarEstado(1, Estado.EN_DESARROLLO, null);
-
         service.cambiarEstado(1, Estado.EN_VALIDACION, null);
+        service.cambiarEstado(1, Estado.FINALIZADA, "Se reemplazó el cable de red.");
 
-        service.cambiarEstado(
-                1,
-                Estado.FINALIZADA,
-                "Se reemplazó el cable de red."
-        );
-
-        System.out.println(service.buscarPorId(1));
+        System.out.println("\n===== TABLERO KANBAN FINAL =====");
+        System.out.println(service.getKanbanService().obtenerTablero());
     }
-
-
 }
