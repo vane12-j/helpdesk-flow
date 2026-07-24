@@ -3,25 +3,44 @@ package cr.utn.helpdesk;
 import cr.utn.helpdesk.enums.Categoria;
 import cr.utn.helpdesk.enums.Impacto;
 import cr.utn.helpdesk.enums.Urgencia;
-import cr.utn.helpdesk.model.Incidencia;
-
-import java.time.LocalDate;
+import cr.utn.helpdesk.service.IncidenciaService;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Incidencia incidencia = new Incidencia(
-                1,
-                "No hay conexión a Internet",
-                "El equipo no puede acceder a la red desde esta mañana.",
+        IncidenciaService service = new IncidenciaService();
+
+        service.registrarIncidencia(
+                "Sin Internet",
+                "La computadora no tiene acceso a Internet.",
                 Categoria.RED,
                 Impacto.ALTO,
-                Urgencia.ALTA,
-                LocalDate.now()
+                Urgencia.ALTA
         );
 
-        System.out.println(incidencia);
+        service.registrarIncidencia(
+                "Mouse dañado",
+                "El mouse dejó de funcionar correctamente.",
+                Categoria.HARDWARE,
+                Impacto.BAJO,
+                Urgencia.MEDIA
+        );
+
+        System.out.println("===== TODAS =====");
+
+        for (var incidencia : service.obtenerIncidencias()) {
+            System.out.println(incidencia);
+        }
+
+        System.out.println("\n===== BUSCAR ID 1 =====");
+        System.out.println(service.buscarPorId(1));
+
+        System.out.println("\n===== CATEGORIA RED =====");
+
+        for (var incidencia : service.buscarPorCategoria(Categoria.RED)) {
+            System.out.println(incidencia);
+        }
 
     }
 }
