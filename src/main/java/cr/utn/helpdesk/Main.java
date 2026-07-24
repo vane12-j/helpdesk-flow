@@ -1,5 +1,5 @@
 package cr.utn.helpdesk;
-
+import cr.utn.helpdesk.enums.Estado;
 import cr.utn.helpdesk.enums.Categoria;
 import cr.utn.helpdesk.enums.Impacto;
 import cr.utn.helpdesk.enums.Urgencia;
@@ -42,5 +42,20 @@ public class Main {
             System.out.println(incidencia);
         }
 
+        service.cambiarEstado(1, Estado.LISTA, null);
+
+        service.cambiarEstado(1, Estado.EN_DESARROLLO, null);
+
+        service.cambiarEstado(1, Estado.EN_VALIDACION, null);
+
+        service.cambiarEstado(
+                1,
+                Estado.FINALIZADA,
+                "Se reemplazó el cable de red."
+        );
+
+        System.out.println(service.buscarPorId(1));
     }
+
+
 }

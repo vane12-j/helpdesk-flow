@@ -120,5 +120,63 @@ public class IncidenciaService {
         return resultado;
     }
 
+    public void cambiarEstado(int id, Estado nuevoEstado, String solucion) {
 
+        Incidencia incidencia = buscarPorId(id);
+
+        if (incidencia == null) {
+            throw new IllegalArgumentException("Incidencia no encontrada.");
+        }
+
+        Estado estadoActual = incidencia.getEstado();
+
+        switch (estadoActual) {
+
+            case REGISTRADA:
+
+                if (nuevoEstado != Estado.LISTA) {
+                    throw new IllegalStateException("Transición no permitida.");
+                }
+
+                break;
+
+            case LISTA:
+
+                if (nuevoEstado != Estado.EN_DESARROLLO) {
+                    throw new IllegalStateException("Transición no permitida.");
+                }
+
+                break;
+
+            case EN_DESARROLLO:
+
+                if (nuevoEstado != Estado.EN_VALIDACION) {
+                    throw new IllegalStateException("Transición no permitida.");
+                }
+
+                break;
+
+            case EN_VALIDACION:
+
+                if (nuevoEstado != Estado.FINALIZADA) {
+                    throw new IllegalStateException("Transición no permitida.");
+                }
+
+                if (solucion == null || solucion.isBlank()) {
+                    throw new IllegalArgumentException("Debe indicar la solución.");
+                }
+
+                incidencia.setSolucion(solucion);
+                incidencia.setFechaCierre(LocalDate.now());
+
+                break;
+
+            case FINALIZADA:
+
+                throw new IllegalStateException("La incidencia ya está finalizada.");
+        }
+
+        incidencia.setEstado(nuevoEstado);
+
+    }
 }
