@@ -192,10 +192,20 @@ public class ResolverIncidenciaFrame extends JFrame {
                 break;
 
             case FINALIZADA:
+
+            if (btnActualizar != null) {
                 btnActualizar.setEnabled(false);
+            }
+            if (btnCerrar != null) {
                 btnCerrar.setEnabled(false);
-                txtSolucion.setEditable(false);
-                break;
+            }
+            txtSolucion.setEditable(false);
+            break;
+        }
+        if (btnCerrar != null) {
+            btnCerrar.setEnabled(
+                    incidencia.getEstado() == Estado.EN_VALIDACION
+            );
         }
     }
 
