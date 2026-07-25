@@ -15,11 +15,7 @@ public class IncidenciaService {
     private final List<Incidencia> incidencias = new ArrayList<>();
     private int siguienteId = 1;
 
-    public Incidencia registrarIncidencia(String titulo,
-                                          String descripcion,
-                                          Categoria categoria,
-                                          Impacto impacto,
-                                          Urgencia urgencia) {
+    public Incidencia registrarIncidencia(String titulo, String descripcion, Categoria categoria, Impacto impacto, Urgencia urgencia) {
 
         if (titulo == null || titulo.isBlank()) {
             throw new IllegalArgumentException("El título no puede estar vacío.");

@@ -59,8 +59,16 @@ public class MainFrame extends JFrame {
         cbUrgencia = new JComboBox<>(Urgencia.values());
 
         btnRegistrar = new JButton("Registrar incidencia");
+        //metodo para que la tabla del formulario no se pueda editar
+        modeloTabla = new DefaultTableModel() {
 
-        modeloTabla = new DefaultTableModel();
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+
+
+        };
 
         modeloTabla.addColumn("ID");
         modeloTabla.addColumn("Título");
@@ -69,6 +77,19 @@ public class MainFrame extends JFrame {
         modeloTabla.addColumn("Prioridad");
 
         tabla = new JTable(modeloTabla);
+
+        // No permitir mover columnas
+        tabla.getTableHeader().setReorderingAllowed(false);
+
+        // Solo seleccionar una fila
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Ancho de columnas
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(250);
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(150);
+        tabla.getColumnModel().getColumn(4).setPreferredWidth(120);
 
     }
 
