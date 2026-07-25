@@ -5,7 +5,7 @@ import cr.utn.helpdesk.enums.Impacto;
 import cr.utn.helpdesk.enums.Urgencia;
 import cr.utn.helpdesk.model.Incidencia;
 import cr.utn.helpdesk.service.IncidenciaService;
-
+import cr.utn.helpdesk.enums.Estado;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -14,19 +14,23 @@ import java.awt.*;
 public class MainFrame extends JFrame {
 
     private final IncidenciaService service = new IncidenciaService();
-
     private JTextField txtTitulo;
     private JTextArea txtDescripcion;
-
     private JComboBox<Categoria> cbCategoria;
     private JComboBox<Impacto> cbImpacto;
     private JComboBox<Urgencia> cbUrgencia;
-
     private JButton btnRegistrar;
-
     private JTable tabla;
     private DefaultTableModel modeloTabla;
-
+    private JTextField txtTituloSeleccionado;
+    private JTextField txtEstadoSeleccionado;
+    private JTextField txtFechaCreacion;
+    private JTextArea txtSolucion;
+    private JButton btnCerrarIncidencia;
+    private Incidencia incidenciaSeleccionada;
+    private JComboBox<cr.utn.helpdesk.enums.Estado> cbNuevoEstado;
+    private JButton btnActualizarEstado;
+    private JButton btnResolver;
     public MainFrame() {
 
         configurarVentana();
@@ -59,6 +63,24 @@ public class MainFrame extends JFrame {
         cbUrgencia = new JComboBox<>(Urgencia.values());
 
         btnRegistrar = new JButton("Registrar incidencia");
+        txtTituloSeleccionado = new JTextField(25);
+        txtTituloSeleccionado.setEditable(false);
+        btnResolver = new JButton("Resolver incidencia");
+
+        txtEstadoSeleccionado = new JTextField(20);
+        txtEstadoSeleccionado.setEditable(false);
+
+        txtFechaCreacion = new JTextField(15);
+        txtFechaCreacion.setEditable(false);
+
+        txtSolucion = new JTextArea(4,25);
+        txtSolucion.setLineWrap(true);
+        txtSolucion.setWrapStyleWord(true);
+
+        btnCerrarIncidencia = new JButton("Cerrar incidencia");
+        cbNuevoEstado = new JComboBox<>();
+        btnActualizarEstado = new JButton("Actualizar estado");
+
         //metodo para que la tabla del formulario no se pueda editar
         modeloTabla = new DefaultTableModel() {
 
@@ -66,8 +88,6 @@ public class MainFrame extends JFrame {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-
-
         };
 
         modeloTabla.addColumn("ID");
@@ -75,6 +95,8 @@ public class MainFrame extends JFrame {
         modeloTabla.addColumn("Categoría");
         modeloTabla.addColumn("Estado");
         modeloTabla.addColumn("Prioridad");
+        modeloTabla.addColumn("Fecha creación");
+        modeloTabla.addColumn("Fecha cierre");
 
         tabla = new JTable(modeloTabla);
 
@@ -90,11 +112,14 @@ public class MainFrame extends JFrame {
         tabla.getColumnModel().getColumn(2).setPreferredWidth(120);
         tabla.getColumnModel().getColumn(3).setPreferredWidth(150);
         tabla.getColumnModel().getColumn(4).setPreferredWidth(120);
+        tabla.getColumnModel().getColumn(5).setPreferredWidth(120);
+        tabla.getColumnModel().getColumn(6).setPreferredWidth(120);
 
     }
 
     private void agregarComponentes() {
 
+        // Panel Registrar Incidencia
         JPanel formulario = new JPanel(new GridBagLayout());
         formulario.setBorder(BorderFactory.createTitledBorder("Registrar incidencia"));
 
@@ -140,21 +165,29 @@ public class MainFrame extends JFrame {
         gbc.gridx = 1;
         gbc.gridy++;
         formulario.add(btnRegistrar, gbc);
+        gbc.gridx = 2;
+        formulario.add(btnResolver, gbc);
 
         add(formulario, BorderLayout.NORTH);
 
+        // Tabla
         JScrollPane scrollTabla = new JScrollPane(tabla);
         scrollTabla.setBorder(
                 BorderFactory.createTitledBorder("Incidencias registradas")
         );
-
         add(scrollTabla, BorderLayout.CENTER);
+
+        GridBagConstraints g = new GridBagConstraints();
+        g.insets = new Insets(5, 5, 5, 5);
+        g.anchor = GridBagConstraints.WEST;
 
     }
 
     private void configurarEventos() {
 
         btnRegistrar.addActionListener(e -> registrarIncidencia());
+
+        btnResolver.addActionListener(e -> abrirResolver());
 
     }
 
@@ -175,7 +208,9 @@ public class MainFrame extends JFrame {
                     incidencia.getTitulo(),
                     incidencia.getCategoria(),
                     incidencia.getEstado(),
-                    incidencia.getPrioridad()
+                    incidencia.getPrioridad(),
+                    incidencia.getFechaCreacion(),
+                    ""
             });
 
             limpiarFormulario();
@@ -208,6 +243,49 @@ public class MainFrame extends JFrame {
         cbUrgencia.setSelectedIndex(0);
 
         txtTitulo.requestFocus();
+
+    }
+
+
+    private void abrirResolver() {
+
+        int fila = tabla.getSelectedRow();
+
+        if (fila == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione una incidencia."
+            );
+
+            return;
+
+        }
+
+        int id = (int) modeloTabla.getValueAt(fila,0);
+
+        Incidencia incidencia = service.buscarPorId(id);
+
+        try {
+
+            new ResolverIncidenciaFrame(
+                    this,
+                    service,
+                    incidencia,
+                    modeloTabla,
+                    fila
+            );
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex.toString()
+            );
+
+        }
 
     }
 
