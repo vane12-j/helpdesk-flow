@@ -3,6 +3,7 @@ package cr.utn.helpdesk.service;
 import cr.utn.helpdesk.enums.Categoria;
 import cr.utn.helpdesk.enums.Estado;
 import cr.utn.helpdesk.enums.Impacto;
+import cr.utn.helpdesk.enums.Prioridad;
 import cr.utn.helpdesk.enums.Urgencia;
 import cr.utn.helpdesk.model.Incidencia;
 
@@ -10,10 +11,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import cr.utn.helpdesk.enums.Prioridad;
 public class IncidenciaService {
+
     private final List<Incidencia> incidencias = new ArrayList<>();
     private int siguienteId = 1;
+    private final ExpediteService expediteService;
+
+    public IncidenciaService() {
+        this.expediteService = new ExpediteService(incidencias);
+    }
 
     public Incidencia registrarIncidencia(String titulo, String descripcion, Categoria categoria, Impacto impacto, Urgencia urgencia) {
 
@@ -36,7 +42,7 @@ public class IncidenciaService {
         );
 
         incidencia.setEstado(Estado.REGISTRADA);
-        incidencia.setPrioridad(calcularPrioridad(impacto, urgencia));
+        incidencia.setPrioridad(PrioridadCalculator.calcular(impacto, urgencia));
 
         incidencias.add(incidencia);
 
@@ -44,41 +50,19 @@ public class IncidenciaService {
     }
 
     public List<Incidencia> obtenerIncidencias() {
-        return incidencias;
-    }
-
-    private Prioridad calcularPrioridad(Impacto impacto, Urgencia urgencia) {
-
-        if (impacto == Impacto.ALTO && urgencia == Urgencia.ALTA) {
-            return Prioridad.CRITICA;
-        }
-
-        if (impacto == Impacto.ALTO &&
-                (urgencia == Urgencia.MEDIA || urgencia == Urgencia.BAJA)) {
-            return Prioridad.ALTA;
-        }
-
-        if ((impacto == Impacto.MEDIO || impacto == Impacto.BAJO) &&
-                urgencia == Urgencia.ALTA) {
-            return Prioridad.ALTA;
-        }
-
-        return Prioridad.NORMAL;
+        return List.copyOf(incidencias);
     }
 
     public Incidencia buscarPorId(int id) {
-
         for (Incidencia incidencia : incidencias) {
             if (incidencia.getId() == id) {
                 return incidencia;
             }
         }
-
         return null;
     }
 
     public List<Incidencia> buscarPorEstado(Estado estado) {
-
         List<Incidencia> resultado = new ArrayList<>();
 
         for (Incidencia incidencia : incidencias) {
@@ -91,7 +75,6 @@ public class IncidenciaService {
     }
 
     public List<Incidencia> buscarPorPrioridad(Prioridad prioridad) {
-
         List<Incidencia> resultado = new ArrayList<>();
 
         for (Incidencia incidencia : incidencias) {
@@ -104,7 +87,6 @@ public class IncidenciaService {
     }
 
     public List<Incidencia> buscarPorCategoria(Categoria categoria) {
-
         List<Incidencia> resultado = new ArrayList<>();
 
         for (Incidencia incidencia : incidencias) {
@@ -117,62 +99,20 @@ public class IncidenciaService {
     }
 
     public void cambiarEstado(int id, Estado nuevoEstado, String solucion) {
-
         Incidencia incidencia = buscarPorId(id);
 
         if (incidencia == null) {
             throw new IllegalArgumentException("Incidencia no encontrada.");
         }
 
-        Estado estadoActual = incidencia.getEstado();
+        EstadoTransitionValidator.validarYCambiar(incidencia, nuevoEstado, solucion);
+    }
 
-        switch (estadoActual) {
+    public ExpediteService getExpediteService() {
+        return expediteService;
+    }
 
-            case REGISTRADA:
-
-                if (nuevoEstado != Estado.LISTA) {
-                    throw new IllegalStateException("Transición no permitida.");
-                }
-
-                break;
-
-            case LISTA:
-
-                if (nuevoEstado != Estado.EN_DESARROLLO) {
-                    throw new IllegalStateException("Transición no permitida.");
-                }
-
-                break;
-
-            case EN_DESARROLLO:
-
-                if (nuevoEstado != Estado.EN_VALIDACION) {
-                    throw new IllegalStateException("Transición no permitida.");
-                }
-
-                break;
-
-            case EN_VALIDACION:
-
-                if (nuevoEstado != Estado.FINALIZADA) {
-                    throw new IllegalStateException("Transición no permitida.");
-                }
-
-                if (solucion == null || solucion.isBlank()) {
-                    throw new IllegalArgumentException("Debe indicar la solución.");
-                }
-
-                incidencia.setSolucion(solucion);
-                incidencia.setFechaCierre(LocalDate.now());
-
-                break;
-
-            case FINALIZADA:
-
-                throw new IllegalStateException("La incidencia ya está finalizada.");
-        }
-
-        incidencia.setEstado(nuevoEstado);
-
+    public KanbanService getKanbanService() {
+        return new KanbanService(incidencias);
     }
 }
