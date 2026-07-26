@@ -98,6 +98,22 @@ public class IncidenciaService {
         return resultado;
     }
 
+    public List<Incidencia> obtenerAbiertas() {
+        List<Incidencia> resultado = new ArrayList<>();
+
+        for (Incidencia incidencia : incidencias) {
+            if (incidencia.getEstado() != Estado.FINALIZADA) {
+                resultado.add(incidencia);
+            }
+        }
+
+        return resultado;
+    }
+
+    public List<Incidencia> obtenerFinalizadas() {
+        return buscarPorEstado(Estado.FINALIZADA);
+    }
+
     public void cambiarEstado(int id, Estado nuevoEstado, String solucion) {
         Incidencia incidencia = buscarPorId(id);
 
@@ -114,5 +130,9 @@ public class IncidenciaService {
 
     public KanbanService getKanbanService() {
         return new KanbanService(incidencias);
+    }
+
+    public MetricasService getMetricasService() {
+        return new MetricasService(incidencias);
     }
 }
