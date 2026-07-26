@@ -13,7 +13,7 @@ El proyecto fue desarrollado como parte del curso de **Metodologías Ágiles**, 
 # Integrantes
 
 - Vanessa Amador Jiménez
-- Isaac (Apellido)
+- Isaac Ortega
 
 ---
 
@@ -103,6 +103,10 @@ helpdesk-flow
 │
 ├── pom.xml
 ├── README.md
+├── IA-LOG.md
+├── RETROSPECTIVA.md
+├── REFACTORING.md
+├── KANBAN.md
 └── .gitignore
 ```
 
@@ -243,6 +247,36 @@ Las pruebas cubren:
 - Restricción EXPEDITE (`ExpediteServiceTest`)
 - Flujo integrado del servicio (`IncidenciaServiceFunctionalTest`)
 - Tablero Kanban (`KanbanServiceFunctionalTest`)
+- Consultas abiertas/finalizadas (`ConsultasIncidenciaFunctionalTest`)
+- Métricas del sistema (`MetricasServiceTest`)
+
+---
+
+# Métricas
+
+El servicio `MetricasService` calcula:
+
+- **Total** de incidencias registradas
+- **Abiertas** (estado distinto de `FINALIZADA`)
+- **Cerradas** (estado `FINALIZADA`)
+- **Throughput**: incidencias cerradas por día calendario del período
+- **Lead Time**: promedio de días entre creación y cierre
+- **Cantidad por prioridad**: conteo por `NORMAL`, `ALTA`, `CRITICA`, `EXPEDITE`
+
+Ejemplo desde código:
+
+```java
+IncidenciaService service = new IncidenciaService();
+Metricas metricas = service.getMetricasService().calcular();
+System.out.println(metricas);
+```
+
+Consultas dedicadas:
+
+```java
+service.obtenerAbiertas();
+service.obtenerFinalizadas();
+```
 
 ---
 
@@ -275,6 +309,19 @@ https://github.com/vane12-j/helpdesk-flow/projects
 
 Columnas: Backlog → Preparado → En desarrollo → Validación → Hecho (con límites WIP).
 
+Guía de configuración: [KANBAN.md](KANBAN.md)
+
+---
+
+# Documentación del proyecto
+
+| Documento | Descripción |
+|-----------|-------------|
+| [IA-LOG.md](IA-LOG.md) | Bitácora de uso de inteligencia artificial |
+| [RETROSPECTIVA.md](RETROSPECTIVA.md) | Reflexión del equipo sobre el proceso XP |
+| [REFACTORING.md](REFACTORING.md) | Decisiones de refactorización |
+| [KANBAN.md](KANBAN.md) | Configuración del tablero Kanban |
+
 ---
 
 # Decisiones de diseño
@@ -303,17 +350,18 @@ Implementado:
 - Registro de incidencias.
 - Interfaz gráfica.
 - Validaciones.
-- Búsquedas.
+- Búsquedas y consultas (abiertas, finalizadas, por estado y prioridad).
 - Cálculo automático de prioridad.
 - Gestión del flujo de estados.
-- Servicio EXPEDITE y tablero Kanban (código).
+- Servicio EXPEDITE y tablero Kanban.
+- Métricas (total, abiertas, cerradas, throughput, lead time, por prioridad).
 - Pruebas unitarias y funcionales (TDD).
 - Pipeline de GitHub Actions.
+- Documentación (README, IA-LOG, Retrospectiva, Refactoring, Kanban).
 
-Pendiente:
+Pendiente (manual):
 
-- Métricas (total, abiertas, cerradas, throughput, lead time).
-- Documentación complementaria (IA-LOG y Retrospectiva, responsabilidad de Vanessa).
+- Crear el tablero en GitHub Projects siguiendo [KANBAN.md](KANBAN.md).
 
 ---
 
