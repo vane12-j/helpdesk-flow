@@ -1,5 +1,7 @@
 # HelpDesk Flow
 
+![CI Pipeline](https://github.com/vane12-j/helpdesk-flow/actions/workflows/ci.yml/badge.svg)
+
 ## Descripción
 
 HelpDesk Flow es una aplicación desarrollada en **Java** para gestionar incidencias de soporte técnico. El sistema permite registrar incidencias, asignar automáticamente una prioridad según el impacto y la urgencia, administrar el estado de cada incidencia y consultar la información registrada.
@@ -221,8 +223,26 @@ mvn clean compile
 Ejecutar:
 
 ```bash
-mvn exec:java
+mvn exec:java -Dexec.mainClass=cr.utn.helpdesk.Main
 ```
+
+---
+
+# Cómo ejecutar las pruebas
+
+Ejecutar todas las pruebas unitarias y funcionales:
+
+```bash
+mvn test
+```
+
+Las pruebas cubren:
+
+- Cálculo de prioridad (`PrioridadCalculatorTest`)
+- Transiciones de estado y cierre sin solución (`EstadoTransitionValidatorTest`)
+- Restricción EXPEDITE (`ExpediteServiceTest`)
+- Flujo integrado del servicio (`IncidenciaServiceFunctionalTest`)
+- Tablero Kanban (`KanbanServiceFunctionalTest`)
 
 ---
 
@@ -247,6 +267,34 @@ El sistema valida que:
 
 ---
 
+# Tablero Kanban
+
+Tablero del proyecto en GitHub Projects:
+
+https://github.com/vane12-j/helpdesk-flow/projects
+
+Columnas: Backlog → Preparado → En desarrollo → Validación → Hecho (con límites WIP).
+
+---
+
+# Decisiones de diseño
+
+- **Flujo de estados secuencial**: `REGISTRADA → LISTA → EN_DESARROLLO → EN_VALIDACION → FINALIZADA`. Solo se permiten transiciones al siguiente estado; el cierre exige solución.
+- **EXPEDITE**: servicio dedicado (`ExpediteService`) que garantiza una sola incidencia EXPEDITE activa a la vez.
+- **Separación de responsabilidades**: prioridad, transiciones y Kanban en clases independientes para facilitar pruebas (ver `REFACTORING.md`).
+
+---
+
+# Pipeline CI
+
+GitHub Actions compila, ejecuta pruebas y empaqueta en cada push o pull request a `main`.
+
+Workflow: `.github/workflows/ci.yml`
+
+Pasos: checkout → JDK 21 → `mvn compile` → `mvn test` → `mvn package`
+
+---
+
 # Estado actual del proyecto
 
 Implementado:
@@ -258,12 +306,14 @@ Implementado:
 - Búsquedas.
 - Cálculo automático de prioridad.
 - Gestión del flujo de estados.
+- Servicio EXPEDITE y tablero Kanban (código).
+- Pruebas unitarias y funcionales (TDD).
+- Pipeline de GitHub Actions.
 
 Pendiente:
 
-- Pruebas unitarias.
-- GitHub Actions.
-- Documentación complementaria (IA-LOG y Retrospectiva).
+- Métricas (total, abiertas, cerradas, throughput, lead time).
+- Documentación complementaria (IA-LOG y Retrospectiva, responsabilidad de Vanessa).
 
 ---
 
