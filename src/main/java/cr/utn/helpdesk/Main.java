@@ -1,19 +1,4 @@
 package cr.utn.helpdesk;
-
-import cr.utn.helpdesk.ui.MainFrame;
-
-import javax.swing.SwingUtilities;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> new MainFrame());
-
-    }
-
-}
-
 import cr.utn.helpdesk.enums.Categoria;
 import cr.utn.helpdesk.enums.Estado;
 import cr.utn.helpdesk.enums.Impacto;
