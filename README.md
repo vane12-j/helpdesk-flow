@@ -1,5 +1,7 @@
 # HelpDesk Flow
 
+![CI Pipeline](https://github.com/vane12-j/helpdesk-flow/actions/workflows/ci.yml/badge.svg)
+
 ## Descripción
 
 HelpDesk Flow es una aplicación desarrollada en **Java** para gestionar incidencias de soporte técnico. El sistema permite registrar incidencias, asignar automáticamente una prioridad según el impacto y la urgencia, administrar el estado de cada incidencia y consultar la información registrada.
@@ -11,7 +13,7 @@ El proyecto fue desarrollado como parte del curso de **Metodologías Ágiles**, 
 # Integrantes
 
 - Vanessa Amador Jiménez
-- Isaac (Apellido)
+- Isaac Ortega
 
 ---
 
@@ -101,6 +103,10 @@ helpdesk-flow
 │
 ├── pom.xml
 ├── README.md
+├── IA-LOG.md
+├── RETROSPECTIVA.md
+├── REFACTORING.md
+├── KANBAN.md
 └── .gitignore
 ```
 
@@ -221,7 +227,55 @@ mvn clean compile
 Ejecutar:
 
 ```bash
-mvn exec:java
+mvn exec:java -Dexec.mainClass=cr.utn.helpdesk.Main
+```
+
+---
+
+# Cómo ejecutar las pruebas
+
+Ejecutar todas las pruebas unitarias y funcionales:
+
+```bash
+mvn test
+```
+
+Las pruebas cubren:
+
+- Cálculo de prioridad (`PrioridadCalculatorTest`)
+- Transiciones de estado y cierre sin solución (`EstadoTransitionValidatorTest`)
+- Restricción EXPEDITE (`ExpediteServiceTest`)
+- Flujo integrado del servicio (`IncidenciaServiceFunctionalTest`)
+- Tablero Kanban (`KanbanServiceFunctionalTest`)
+- Consultas abiertas/finalizadas (`ConsultasIncidenciaFunctionalTest`)
+- Métricas del sistema (`MetricasServiceTest`)
+
+---
+
+# Métricas
+
+El servicio `MetricasService` calcula:
+
+- **Total** de incidencias registradas
+- **Abiertas** (estado distinto de `FINALIZADA`)
+- **Cerradas** (estado `FINALIZADA`)
+- **Throughput**: incidencias cerradas por día calendario del período
+- **Lead Time**: promedio de días entre creación y cierre
+- **Cantidad por prioridad**: conteo por `NORMAL`, `ALTA`, `CRITICA`, `EXPEDITE`
+
+Ejemplo desde código:
+
+```java
+IncidenciaService service = new IncidenciaService();
+Metricas metricas = service.getMetricasService().calcular();
+System.out.println(metricas);
+```
+
+Consultas dedicadas:
+
+```java
+service.obtenerAbiertas();
+service.obtenerFinalizadas();
 ```
 
 ---
@@ -247,6 +301,47 @@ El sistema valida que:
 
 ---
 
+# Tablero Kanban
+
+Tablero del proyecto en GitHub Projects:
+
+https://github.com/vane12-j/helpdesk-flow/projects
+
+Columnas: Backlog → Preparado → En desarrollo → Validación → Hecho (con límites WIP).
+
+Guía de configuración: [KANBAN.md](KANBAN.md)
+
+---
+
+# Documentación del proyecto
+
+| Documento | Descripción |
+|-----------|-------------|
+| [IA-LOG.md](IA-LOG.md) | Bitácora de uso de inteligencia artificial |
+| [RETROSPECTIVA.md](RETROSPECTIVA.md) | Reflexión del equipo sobre el proceso XP |
+| [REFACTORING.md](REFACTORING.md) | Decisiones de refactorización |
+| [KANBAN.md](KANBAN.md) | Configuración del tablero Kanban |
+
+---
+
+# Decisiones de diseño
+
+- **Flujo de estados secuencial**: `REGISTRADA → LISTA → EN_DESARROLLO → EN_VALIDACION → FINALIZADA`. Solo se permiten transiciones al siguiente estado; el cierre exige solución.
+- **EXPEDITE**: servicio dedicado (`ExpediteService`) que garantiza una sola incidencia EXPEDITE activa a la vez.
+- **Separación de responsabilidades**: prioridad, transiciones y Kanban en clases independientes para facilitar pruebas (ver `REFACTORING.md`).
+
+---
+
+# Pipeline CI
+
+GitHub Actions compila, ejecuta pruebas y empaqueta en cada push o pull request a `main`.
+
+Workflow: `.github/workflows/ci.yml`
+
+Pasos: checkout → JDK 21 → `mvn compile` → `mvn test` → `mvn package`
+
+---
+
 # Estado actual del proyecto
 
 Implementado:
@@ -255,15 +350,18 @@ Implementado:
 - Registro de incidencias.
 - Interfaz gráfica.
 - Validaciones.
-- Búsquedas.
+- Búsquedas y consultas (abiertas, finalizadas, por estado y prioridad).
 - Cálculo automático de prioridad.
 - Gestión del flujo de estados.
+- Servicio EXPEDITE y tablero Kanban.
+- Métricas (total, abiertas, cerradas, throughput, lead time, por prioridad).
+- Pruebas unitarias y funcionales (TDD).
+- Pipeline de GitHub Actions.
+- Documentación (README, IA-LOG, Retrospectiva, Refactoring, Kanban).
 
-Pendiente:
+Pendiente (manual):
 
-- Pruebas unitarias.
-- GitHub Actions.
-- Documentación complementaria (IA-LOG y Retrospectiva).
+- Crear el tablero en GitHub Projects siguiendo [KANBAN.md](KANBAN.md).
 
 ---
 
