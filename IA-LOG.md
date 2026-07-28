@@ -28,7 +28,7 @@ Registro de uso de IA
 | 24/07/2026 | ChatGPT | Diseñar el modelo del sistema | Se generó una propuesta para la clase `Incidencia` con sus atributos principales. | Se revisó que cumpliera con los requerimientos del proyecto y se realizaron pruebas de compilación. | Se modificaron atributos, constructores, métodos de acceso y se decidió utilizar un identificador incremental (`int`) en lugar de otra alternativa.                                                                                                                    |
 | 25/07/2026 | ChatGPT | Implementar la lógica de negocio | Se obtuvo una versión inicial de `IncidenciaService` para registrar incidencias, calcular prioridades y gestionar estados. | Se realizaron pruebas funcionales registrando incidencias y verificando el flujo de estados dentro de la aplicación. | El código se reorganizado en métodos más claros, se añadieron validaciones y se ajustó el cálculo de prioridades.                                                                                                                                                      |
 | 26/07/2026 | ChatGPT | Desarrollar la interfaz gráfica | Se generó una propuesta inicial del formulario utilizando Java Swing. | Se ejecutó la aplicación en IntelliJ IDEA verificando el funcionamiento del formulario y la tabla de incidencias. | Se reorganizó el código de la interfaz, se separó la lógica en diferentes métodos, se conectó con `IncidenciaService`, se añadió la actualización automática de la tabla y se realizaron mejoras visuales como impedir la edición de las filas y ajustar las columnas. |
-| 27/07/2026 | ChatGPT | Elaborar la documentación del proyecto | Se generó una propuesta para el README, el tablero Kanban y la documentación del proyecto. | El contenido fue revisado manualmente y comparado con los requerimientos de la asignación antes de incorporarlo al repositorio. | Se reescribieron varias secciones, se amplió la documentación, se personalizó para el proyecto y se adaptó al formato que el profe dio en el enunciado.                                                                                                                |
+| 27/07/2026 | ChatGPT | Mejorar la interfaz gráfica y la integración con la lógica del sistema | Se obtuvo una propuesta para optimizar el formulario de registro de incidencias y su interacción con IncidenciaService | Se ejecutó la aplicación en IntelliJ IDEA y se realizaron pruebas registrando incidencias para verificar el funcionamiento del formulario y la actualización de la tabla. | Se reorganizó el código de la interfaz, se adaptó a la arquitectura existente, se modificó la lógica de actualización de la tabla, se agregaron validaciones adicionales y se mejoró el comportamiento de los componentes gráficos.                                                                                                                |
 
 ---
 
@@ -54,7 +54,7 @@ Antes de incorporarla al proyecto, el equipo realizó diversas modificaciones, e
 
 Durante el desarrollo, la IA sugirió implementar una base de datos para almacenar permanentemente las incidencias.
 
-El equipo decidió no incorporar esta propuesta, ya que el alcance de la asignación no requería persistencia de datos y su implementación aumentaría significativamente la complejidad del proyecto.
+Se decidio no incorporar esta propuesta, ya que el alcance de la asignación no requería persistencia de datos y su implementación aumentaría significativamente la complejidad del proyecto.
 
 ---
 
@@ -93,17 +93,17 @@ La IA se utilizado como una herramienta de apoyo para concluir el desarrollo del
 
 Registro de interacciones con IA durante el desarrollo de **HelpDesk Flow**.
 
-| Fecha | IA | Objetivo | Resultado | ¿Se usó? | Cambios |
-|-------|-----|----------|-----------|----------|---------|
-| 15/07/2026 | ChatGPT | Generar casos de prueba para cálculo de prioridad | Propuso 8 tests con `@ParameterizedTest` | Sí, modificado | Se adaptaron nombres al dominio del proyecto y se eliminaron casos duplicados con los de Vanessa |
-| 18/07/2026 | Cursor (Claude) | Crear `EstadoTransitionValidator` con validación de transiciones | Generó la clase completa con switch por estado | Sí | Se integró tal cual, solo se ajustó el mensaje de error al español del proyecto |
-| 20/07/2026 | ChatGPT | Diseñar interfaz Swing con tabla de incidencias | Propuso layout con `BorderLayout` y `JTable` sin integración con el servicio | No | **Rechazado**: la UI no respetaba el flujo de estados ni conectaba con `IncidenciaService`; se rehizo manualmente en `MainFrame` |
-| 22/07/2026 | Cursor | Documentar refactorización en `REFACTORING.md` | Generó borrador con SRP y tabla de clases | Sí, modificado | Se añadieron secciones de EXPEDITE y flujo Kanban que la IA no incluyó |
-| 24/07/2026 | ChatGPT | Implementar métricas (throughput y lead time) | Propuso usar `System.currentTimeMillis()` en lugar de `LocalDate` | Sí, modificado | Se reemplazó por `ChronoUnit.DAYS` entre `fechaCreacion` y `fechaCierre` para alinear con el modelo existente |
+| Fecha      | IA | Objetivo | Resultado | ¿Se usó? | Cambios |
+|------------|-----|----------|-----------|----------|---------|
+| 24/07/2026 | ChatGPT | Generar casos de prueba para cálculo de prioridad | Propuso 8 tests con `@ParameterizedTest` | Sí, modificado | Se adaptaron nombres al dominio del proyecto y se eliminaron casos duplicados con los de Vanessa |
+| 25/07/2026 | Cursor (Claude) | Crear `EstadoTransitionValidator` con validación de transiciones | Generó la clase completa con switch por estado | Sí | Se integró tal cual, solo se ajustó el mensaje de error al español del proyecto |
+| 26/07/2026 | ChatGPT | Diseñar interfaz Swing con tabla de incidencias | Propuso layout con `BorderLayout` y `JTable` sin integración con el servicio | No | **Rechazado**: la UI no respetaba el flujo de estados ni conectaba con `IncidenciaService`; se rehizo manualmente en `MainFrame` |
+| 27/07/2026 | Cursor | Documentar refactorización en `REFACTORING.md` | Generó borrador con SRP y tabla de clases | Sí, modificado | Se añadieron secciones de EXPEDITE y flujo Kanban que la IA no incluyó |
+| 27/07/2026 | ChatGPT | Implementar métricas (throughput y lead time) | Propuso usar `System.currentTimeMillis()` en lugar de `LocalDate` | Sí, modificado | Se reemplazó por `ChronoUnit.DAYS` entre `fechaCreacion` y `fechaCierre` para alinear con el modelo existente |
 
 ---
 
-## Respuesta modificada (15/07/2026)
+## Respuesta modificada (24/07/2026)
 
 **Original de ChatGPT:** Tests con nombres en inglés (`testHighHighReturnsCritical`) y sin usar enums del proyecto.
 
@@ -113,19 +113,6 @@ Registro de interacciones con IA durante el desarrollo de **HelpDesk Flow**.
 
 ---
 
-## Respuesta rechazada (20/07/2026)
-
-**Propuesta de ChatGPT:** Formulario Swing independiente que almacenaba incidencias en un `ArrayList` local, sin validaciones ni flujo de estados.
-
-**Motivo del rechazo:**
-
-1. Duplicaba la lógica de negocio fuera de `IncidenciaService`.
-2. No validaba descripción mínima ni transiciones de estado.
-3. No era compatible con las pruebas funcionales ya escritas por Isaac.
-
-Se descartó por completo y Vanessa implementó `MainFrame` conectado al servicio existente.
-
----
 
 ## Lecciones aprendidas
 
