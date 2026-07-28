@@ -10,37 +10,58 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-//Aquí esta toda la parte visual del formulario, para verlo corriendo es en el archivo main.java
+// Desde aquí el usuario registra incidencias y puede seleccionar una para resolverla.
 public class MainFrame extends JFrame {
 
+    // Servicio que administra toda la lógica de las incidencias.
     private final IncidenciaService service = new IncidenciaService();
+
+    // Componentes del formulario de registro.
     private JTextField txtTitulo;
     private JTextArea txtDescripcion;
     private JComboBox<Categoria> cbCategoria;
     private JComboBox<Impacto> cbImpacto;
     private JComboBox<Urgencia> cbUrgencia;
+
     private JButton btnRegistrar;
+
+    // Tabla donde se muestran todas las incidencias registradas.
     private JTable tabla;
     private DefaultTableModel modeloTabla;
+
+    // Componentes utilizados para trabajar con una incidencia seleccionada.
     private JTextField txtTituloSeleccionado;
     private JTextField txtEstadoSeleccionado;
     private JTextField txtFechaCreacion;
     private JTextArea txtSolucion;
     private JButton btnCerrarIncidencia;
     private Incidencia incidenciaSeleccionada;
-    private JComboBox<cr.utn.helpdesk.enums.Estado> cbNuevoEstado;
+
+    private JComboBox<Estado> cbNuevoEstado;
     private JButton btnActualizarEstado;
+
+    // Botón que abre la ventana ResolverIncidenciaFrame.
     private JButton btnResolver;
+
     public MainFrame() {
 
+        // Configura la ventana.
         configurarVentana();
+
+        // Crea todos los componentes gráficos.
         inicializarComponentes();
+
+        // Agrega los componentes a la interfaz.
         agregarComponentes();
+
+        // Asocia los eventos de los botones.
         configurarEventos();
+
         setVisible(true);
 
     }
 
+    // Configuración general de la ventana principal.
     private void configurarVentana() {
 
         setTitle("HelpDesk Flow");
@@ -50,6 +71,7 @@ public class MainFrame extends JFrame {
 
     }
 
+    // Inicializa todos los controles del formulario.
     private void inicializarComponentes() {
 
         txtTitulo = new JTextField(25);
@@ -58,13 +80,16 @@ public class MainFrame extends JFrame {
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
 
+        // Los ComboBox cargan automáticamente todos los valores de sus respectivos enums.
         cbCategoria = new JComboBox<>(Categoria.values());
         cbImpacto = new JComboBox<>(Impacto.values());
         cbUrgencia = new JComboBox<>(Urgencia.values());
 
         btnRegistrar = new JButton("Registrar incidencia");
+
         txtTituloSeleccionado = new JTextField(25);
         txtTituloSeleccionado.setEditable(false);
+
         btnResolver = new JButton("Resolver incidencia");
 
         txtEstadoSeleccionado = new JTextField(20);
@@ -78,10 +103,12 @@ public class MainFrame extends JFrame {
         txtSolucion.setWrapStyleWord(true);
 
         btnCerrarIncidencia = new JButton("Cerrar incidencia");
+
         cbNuevoEstado = new JComboBox<>();
         btnActualizarEstado = new JButton("Actualizar estado");
 
-        //metodo para que la tabla del formulario no se pueda editar
+        // Modelo de la tabla.
+        // Se sobrescribe isCellEditable() para impedir que el usuario edite las celdas.
         modeloTabla = new DefaultTableModel() {
 
             @Override
@@ -90,6 +117,7 @@ public class MainFrame extends JFrame {
             }
         };
 
+        // Se definen las columnas de la tabla.
         modeloTabla.addColumn("ID");
         modeloTabla.addColumn("Título");
         modeloTabla.addColumn("Categoría");
@@ -100,13 +128,13 @@ public class MainFrame extends JFrame {
 
         tabla = new JTable(modeloTabla);
 
-        // No permitir mover columnas
+        // No permitir mover columnas.
         tabla.getTableHeader().setReorderingAllowed(false);
 
-        // Solo seleccionar una fila
+        // Solo se puede seleccionar una incidencia a la vez.
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Ancho de columnas
+        // Se ajusta el ancho de las columnas para mejorar la visualización.
         tabla.getColumnModel().getColumn(0).setPreferredWidth(50);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(250);
         tabla.getColumnModel().getColumn(2).setPreferredWidth(120);
@@ -117,9 +145,9 @@ public class MainFrame extends JFrame {
 
     }
 
+    // Construye la interfaz gráfica agregando todos los componentes.
     private void agregarComponentes() {
 
-        // Panel Registrar Incidencia
         JPanel formulario = new JPanel(new GridBagLayout());
         formulario.setBorder(BorderFactory.createTitledBorder("Registrar incidencia"));
 
@@ -164,13 +192,18 @@ public class MainFrame extends JFrame {
 
         gbc.gridx = 1;
         gbc.gridy++;
+
+        // Botón para registrar una nueva incidencia.
         formulario.add(btnRegistrar, gbc);
+
         gbc.gridx = 2;
+
+        // Botón para abrir la ventana donde se resuelve una incidencia.
         formulario.add(btnResolver, gbc);
 
         add(formulario, BorderLayout.NORTH);
 
-        // Tabla
+        // Tabla donde se muestran todas las incidencias registradas.
         JScrollPane scrollTabla = new JScrollPane(tabla);
         scrollTabla.setBorder(
                 BorderFactory.createTitledBorder("Incidencias registradas")
@@ -183,6 +216,7 @@ public class MainFrame extends JFrame {
 
     }
 
+    // Asocia cada botón con la acción correspondiente.
     private void configurarEventos() {
 
         btnRegistrar.addActionListener(e -> registrarIncidencia());
@@ -191,6 +225,7 @@ public class MainFrame extends JFrame {
 
     }
 
+    // Registra una nueva incidencia utilizando la información del formulario.
     private void registrarIncidencia() {
 
         try {
@@ -203,6 +238,7 @@ public class MainFrame extends JFrame {
                     (Urgencia) cbUrgencia.getSelectedItem()
             );
 
+            // Agrega la nueva incidencia a la tabla.
             modeloTabla.addRow(new Object[]{
                     incidencia.getId(),
                     incidencia.getTitulo(),
@@ -233,6 +269,7 @@ public class MainFrame extends JFrame {
 
     }
 
+    // Limpia los controles para permitir registrar una nueva incidencia.
     private void limpiarFormulario() {
 
         txtTitulo.setText("");
@@ -242,15 +279,17 @@ public class MainFrame extends JFrame {
         cbImpacto.setSelectedIndex(0);
         cbUrgencia.setSelectedIndex(0);
 
+        // Devuelve el foco al campo título para facilitar el siguiente registro.
         txtTitulo.requestFocus();
 
     }
 
-
+    // Abre la ventana para resolver la incidencia seleccionada.
     private void abrirResolver() {
 
         int fila = tabla.getSelectedRow();
 
+        // Verifica que el usuario haya seleccionado una fila.
         if (fila == -1) {
 
             JOptionPane.showMessageDialog(
@@ -262,12 +301,15 @@ public class MainFrame extends JFrame {
 
         }
 
+        // Obtiene el ID de la incidencia seleccionada.
         int id = (int) modeloTabla.getValueAt(fila,0);
 
+        // Busca la incidencia completa en el servicio.
         Incidencia incidencia = service.buscarPorId(id);
 
         try {
 
+            // Abre la ventana ResolverIncidenciaFrame enviando la incidencia seleccionada.
             new ResolverIncidenciaFrame(
                     this,
                     service,
