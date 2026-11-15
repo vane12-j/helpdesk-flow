@@ -1,5 +1,11 @@
 # HelpDesk Flow
 
+<!-- local-development:start -->
+## Desarrollo local
+
+Consulta [RUNNING.md](RUNNING.md) para ubicar cada componente, abrirlo en su IDE, compilarlo y conocer las comprobaciones realizadas y los requisitos pendientes.
+<!-- local-development:end -->
+
 ![CI Pipeline](https://github.com/vane12-j/helpdesk-flow/actions/workflows/ci.yml/badge.svg)
 
 ## Descripción
@@ -364,4 +370,3 @@ Pendiente (manual):
 - Crear el tablero en GitHub Projects siguiendo [KANBAN.md](KANBAN.md).
 
 ---
-
